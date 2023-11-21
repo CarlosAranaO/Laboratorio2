@@ -16,7 +16,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r load_packages}
-#Load libraries
+#Cargamos todas las librerias necesarias para el trabajo
 library(tidyr)
 library(dplyr)
 library(httr)
@@ -27,7 +27,8 @@ library(ggplot2)
 
 ```{r funcion}
  mifuncion<- function(my_url){
-  # URL es relativa a absoluta
+ # la funcion devuelve TRUE si el status_code es 200
+   # URL es relativa a absoluta
   if (grepl("^(/|#)", my_url, perl = T)) {
     # Añadimos el dominio a la URL
     my_url <- paste("https://www.mediawiki.org", my_url, sep="/")
@@ -52,6 +53,18 @@ absoluto <- function(my_url2){
 
   # si tiene http* es true sino false
   ifelse (substr(my_url2,1,4) == "http", TRUE, FALSE)
+}
+
+
+
+```
+
+```{r añade mediawiki}
+mediawiki <- function(my_url3){
+
+  # si tiene .mediawiki. es true sino false
+  ifelse (absoluto(my_url3), ifelse (grepl(".mediawiki.",my_url3)==TRUE, TRUE, FALSE), TRUE)
+  
 }
 
 
@@ -95,13 +108,16 @@ tabla_enlaces$enlace_activo <- sapply(tabla_enlaces$Enlace, mifuncion)
 
 tabla_enlaces$absoluto <- sapply(tabla_enlaces$Enlace, absoluto)
 
+ggplot2::ggplot(data=tabla_enlaces)+facet_wrap(~absoluto)+ geom_bar(aes(x = Enlace))
 
+#Preg 2.2
+tabla_enlaces$mediawiki <- sapply(tabla_enlaces$Enlace, mediawiki)
 
-ggplot2::ggplot(data=filter(tabla_enlaces,absoluto=="TRUE"))+ geom_bar(aes(x = Enlace))
+ggplot2::ggplot(data=tabla_enlaces)+ geom_bar(aes(x = mediawiki))
 
-ggplot2::ggplot(data=filter(tabla_enlaces,absoluto=="FALSE"))+ geom_bar(aes(x = Enlace))
+#Preg 2.3
 
-#Preg
+ggplot2::ggplot(data=tabla_enlaces, color = enlace_activo)+ geom_bar(aes(x = enlace_activo, fill = enlace_activo)) + coord_polar()
 
 ```   
 
