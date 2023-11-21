@@ -15,9 +15,44 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
+```{r load_packages}
+#Load libraries
+library(tidyr)
+library(dplyr)
+library(httr)
+library(XML)
+library(rvest)
+```
+
 ```{r cars}
 summary(cars)
-```
+#Preg1
+html1 <- rvest::read_html("https://www.mediawiki.org")
+
+
+
+#preg2
+titulo <- html1 %>% html_node("title") %>% html_text()
+print(titulo)
+
+#Preg3
+
+
+enlaces <- html1 %>% html_elements("a")
+
+#Preg4
+
+enlaces_texto <- enlaces %>% html_text()
+enlaces_href <- enlaces %>% html_attr("href")
+
+tabla_enlaces <- data.frame(Texto = enlaces_texto, Enlace = enlaces_href)
+
+tabla_enlaces$count <- table(tabla_enlaces$Enlace)[tabla_enlaces$Enlace]
+
+tabla_enlaces <- unique(tabla_enlaces)
+
+print(tabla_enlaces)
+```   
 
 ## Including Plots
 
