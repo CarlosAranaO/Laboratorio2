@@ -2,61 +2,31 @@
 title: "Laboratorio 2"
 author: "Grupo2"
 date: "2023-11-21"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r load_packages}
+```{r load_packages, message=FALSE, warning=FALSE, include=FALSE}
 #Cargamos todas las librerias necesarias para el trabajo
 library(tidyr)
 library(dplyr)
 library(httr)
-library(XML)
 library(rvest)
 library(ggplot2)
 ```
 
-```{r funcion}
- mifuncion<- function(my_url){
- # la funcion devuelve TRUE si el status_code es 200
-   # URL es relativa a absoluta
-  if (grepl("^(/|#)", my_url, perl = T)) {
-    # Añadimos el dominio a la URL
-    my_url <- paste("https://www.mediawiki.org", my_url, sep="/")
-  }
-
-  # si la URL sin dominio, tambien añadimos
-  if (!grepl("^http(s)?://", my_url)) {
-    # Añadimos el prefijo "http://" a la URL
-    my_url <- paste("https://", my_url, sep="")
-  }
-  
-  # lanzar request
-  resultado <- HEAD(my_url)
-  ifelse (resultado$status_code == 200, TRUE, FALSE)
-}
-
-
-```
 
 ```{r añade relativo o absoluto}
 absoluto <- function(my_url2){
-
   # si tiene http* es true sino false
   ifelse (substr(my_url2,1,4) == "http", TRUE, FALSE)
 }
-
-
-
 ```
 
 ```{r añade mediawiki}
@@ -66,14 +36,11 @@ mediawiki <- function(my_url3){
   ifelse (absoluto(my_url3), ifelse (grepl(".mediawiki.",my_url3)==TRUE, TRUE, FALSE), TRUE)
   
 }
-
-
-
 ```
 
-```{r cars}
-summary(cars)
+# Pregunta 1
 
+## Pregunta 1.1
 
 ```{r Preg1.1}
 #Preg 1.1
@@ -81,8 +48,8 @@ html1 <- rvest::read_html("https://www.mediawiki.org")
 
 ```
 
+## Preg 1.2
 ```{r Preg1.2}
-#preg 1.2
 titulo <- html1 %>% html_node("title") %>% html_text()
 print(titulo)
 ```
@@ -107,6 +74,26 @@ tabla_enlaces$count <- table(tabla_enlaces$Enlace)[tabla_enlaces$Enlace]
 #tabla_enlaces <- unique(tabla_enlaces)
 
 ```
+```{r funcion}
+ mifuncion<- function(my_url){
+ # la funcion devuelve TRUE si el status_code es 200
+   # URL es relativa a absoluta
+  if (grepl("^(/|#)", my_url, perl = T)) {
+    # Añadimos el dominio a la URL
+    my_url <- paste("https://www.mediawiki.org", my_url, sep="/")
+  }
+
+  # si la URL sin dominio, tambien añadimos
+  if (!grepl("^http(s)?://", my_url)) {
+    # Añadimos el prefijo "http://" a la URL
+    my_url <- paste("https://", my_url, sep="")
+  }
+  
+  # lanzar request
+  resultado <- HEAD(my_url)
+  ifelse (resultado$status_code == 200, TRUE, FALSE)
+}
+```
 
 ```{r Preg1.5}
 #Preg 1.5
@@ -122,8 +109,8 @@ tabla_enlaces$absoluto <- sapply(tabla_enlaces$Enlace, absoluto)
 ggplot2::ggplot(data=tabla_enlaces)+facet_wrap(~absoluto)+ geom_bar(aes(x = Enlace))
 ```
 
+# Pregunta 2.2
 ```{r Preg2.2}
-#Preg 2.2
 tabla_enlaces$mediawiki <- sapply(tabla_enlaces$Enlace, mediawiki)
 
 ggplot2::ggplot(data=tabla_enlaces)+ geom_bar(aes(x = mediawiki))
@@ -133,6 +120,7 @@ ggplot2::ggplot(data=tabla_enlaces)+ geom_bar(aes(x = mediawiki))
 #Preg 2.3
 
 ggplot2::ggplot(data=tabla_enlaces,aes(x="",y=enlace_activo,fill=enlace_activo))+ geom_bar(width=1,stat = "identity")+ coord_polar("y", start=0)
+
 
 ```   
 ```
