@@ -24,6 +24,28 @@ library(XML)
 library(rvest)
 ```
 
+```{r funcion}
+mifuncion <- function(my_url){
+  # URL es relativa a absoluta
+  if (grepl("^(/|#)", my_url, perl = T)) {
+    # Añadimos el dominio a la URL
+    my_url <- paste("https://www.mediawiki.org", my_url, sep="/")
+  }
+
+  # si la URL sin dominio, tambien añadimos
+  if (!grepl("^http(s)?://", my_url)) {
+    # Añadimos el prefijo "http://" a la URL
+    my_url <- paste("https://", my_url, sep="")
+  }
+  
+  # lanzar request
+  resultado <- HEAD(my_url)
+  ifelse (resultado$status_code == 200, TRUE, FALSE)
+}
+
+tabla_enlaces$enlace_activo <- sapply(tabla_enlaces$Enlace, mifuncion)
+```
+
 ```{r cars}
 summary(cars)
 #Preg1
@@ -52,6 +74,44 @@ tabla_enlaces$count <- table(tabla_enlaces$Enlace)[tabla_enlaces$Enlace]
 tabla_enlaces <- unique(tabla_enlaces)
 
 print(tabla_enlaces)
+
+#Preg 5
+
+href22 <- data.frame(Enlace = tabla_enlaces$Enlace)
+# Recorremos todos los enlaces con un for
+for (href22 in href22) {
+
+#for (i in 1:2) {
+  # Obtenemos la URL del enlace
+  href <- href22$Enlace
+
+  # Comprobamos si la URL es relativa
+  if (grepl("^/", href)) {
+    # Añadimos el dominio a la URL
+    href <- paste("https://www.mediawiki.org", href, sep="/")
+  }
+
+  # Comprobamos si la URL es absoluta
+  if (!grepl("^http(s)?://", href)) {
+    # Añadimos el prefijo "http://" a la URL
+    href <- paste("https://", href, sep="")
+  }
+
+  # Hacemos una petición HEAD a la URL
+  resultado <- HEAD(href)
+
+  # Comprobamos el código de estado HTTP
+  if (resultado$status_code == 200) {
+    # El enlace está activo
+    print(paste("Enlace activo:", href))
+  } else {
+    # El enlace no está activo
+    print(paste("Enlace inactivo:", href))
+  }
+
+  # Esperamos 2 segundos para evitar ser baneados
+  Sys.sleep(2)
+}
 ```   
 
 ## Including Plots
