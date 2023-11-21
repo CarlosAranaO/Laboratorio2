@@ -117,7 +117,7 @@ ggplot2::ggplot(data=tabla_enlaces)+ geom_bar(aes(x = mediawiki))
 
 #Preg 2.3
 
-ggplot2::ggplot(data=tabla_enlaces, color = enlace_activo)+ geom_bar(aes(x = enlace_activo, fill = enlace_activo)) + coord_polar()
+ggplot2::ggplot(data=tabla_enlaces,aes(x="",y=enlace_activo,fill=enlace_activo))+ geom_bar(width=1,stat = "identity")+ coord_polar("y", start=0)
 
 ```   
 
